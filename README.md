@@ -35,7 +35,7 @@ Key management (PKI)
 --------------------
 
 * Writers: Hold the global public key
-* Shush Servers: Hold the global private key and copies of each Reader's public key
+* Shush Servers: Hold the global private key, copies of each Reader's public key, and a cert for HTTPS
 * Readers: Hold an individual private key
 
 (TODO: Using a CA would mean that Shush Servers only need to be configured with the signing key, not each Reader's key. But using CAs. And using TLS certificates.)
