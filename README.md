@@ -51,7 +51,7 @@ Routes:
 * `POST /s`: Creates a new secret and has the server assign an ID, returns a `201 Created` with a `Location` header
 * `GET /s/<secret id>`: Gets a secret
 * `DELETE /<secret id>`: Delete a secret
-* `POST /b`: Creates a bundle. The request body should be a JSON list of strings (`Content-Type: application/x.bundle+json`) or newline-separated list (`Content-Type: application/x.bundle`). The response will be an `text/plain` with the bundle token.
+* `POST /b`: Creates a bundle. The request body should be a JSON list of strings (`Content-Type: application/x.bundle+json`) or newline-separated list (`Content-Type: application/x.bundle`). The response will be a `201 Created` with a `Location` header
 * `GET /b/<bundle id>`: Gets a bundle. Returns a `application/x.bundle` or `application/x.bundle+json` with the list of secrets that are in the bundle.
 
 Secret bodies may be either raw bytes (`Content-Type: application/x.secret`) or base64 (`Content-Type: application/x.secret+base64`).
@@ -64,3 +64,8 @@ Scaling
 -------
 
 TODO
+
+
+Session Key
+-----------
+* Random 256b for AEAD; NaCL should have a method to produce one
