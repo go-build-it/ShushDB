@@ -5,11 +5,16 @@ Uses LMDB and capn proto.
 """
 import collections.abc
 import contextlib
+import platform
 
 import lmdb
 
 
-ONE_TB = 1024 * 1024 * 1024  # "On 64-bit there is no penalty for making this huge (say 1TB)"
+if platform.architecture()[0] == '64bit':
+    DEFAULT_MAP = 1024 * 1024 * 1024 * 1024
+    # 1TB "On 64-bit there is no penalty for making this huge (say 1TB)"
+else:
+    DEFAULT_MAP = 10 * 1024 * 1024  # 10MB
 
 
 class Database(collections.abc.Mapping):
@@ -34,6 +39,7 @@ class Database(collections.abc.Mapping):
         return self._struct.from_bytes(blob)
 
     # TODO: Cursor
+
 
 class WritableDatabase(Database, collections.abc.MutableMapping):
     def __setitem__(self, key, value):
@@ -72,6 +78,7 @@ class Transaction(collections.abc.Mapping):
 class ReadingTransaction(Transaction):
     _db_class = Database
 
+
 class WritingTransaction(Transaction):
     _db_class = WritingDatabase
 
@@ -84,7 +91,7 @@ class ObjectDB:
 
     Use the .for_reading() and .for_writing() methods to start transactions.
     """
-    def __init__(self, path, schema, *, subdir=True, map_size=ONE_TB, **opts):
+    def __init__(self, path, schema, *, subdir=True, map_size=DEFAULT_MAP, **opts):
         """
         Takes the same arguments as lmdb.Environment, although some defaults
         have changed.
@@ -100,6 +107,8 @@ class ObjectDB:
 
         self._init_dbs()
 
+        self.environ.reader_check()
+
     def _init_dbs(self):
         """
         Do initial named database creation, so we can assertively know them later.
@@ -108,6 +117,7 @@ class ObjectDB:
             db = self.environ.open_db(dbname, create=True)
             # There isn't a call to free this opaque handle, so I guess we'll
             # just let it float off
+            # (To be fair, it'll get reused)
 
     def __enter__(self):
         return self
