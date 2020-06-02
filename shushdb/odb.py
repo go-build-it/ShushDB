@@ -20,7 +20,7 @@ else:
 class Database(collections.abc.Mapping):
     def __init__(self, handle, txn, struct):
         self._db = handle
-        self._txn = txtn
+        self._txn = txn
         self._struct = struct
 
     def __iter__(self):
